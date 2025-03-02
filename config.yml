@@ -1,0 +1,22 @@
+config:
+  bind: 0.0.0.0:25565
+  onlineMode: true
+  servers:
+    lobby: localhost:25566
+  try:
+    - lobby
+  status:
+    motd: Starfield
+    showMaxPlayers: 1000
+    logPingRequests: false
+    announceForge: false
+  acceptTransfers: false
+  bungeePluginChannelEnabled: false
+  builtinCommands: false
+  requireBuiltinCommandPermissions: false
+  announceProxyCommands: true
+  forceKeyAuthentication: true
+  shutdownReason: Proxy is shutting down!
+  forwarding:
+    mode: velocity
+    velocitySecret: 1234
