@@ -42,6 +42,6 @@ func (p *plugin) chooseInitial(e *proxy.PlayerChooseInitialServerEvent) {
 }
 
 func (p *plugin) init(e *proxy.ReadyEvent) {
-	ln := node.NewLocalNode()
-	containers.CreateContainer("lobby", "anton691/simple-lobby:latest", 25566, ln)
+	containers.GlobalManager.AddNode("local", node.NewLocalNode())
+	containers.CreateContainer("lobby", "anton691/simple-lobby:latest", 25566)
 }
