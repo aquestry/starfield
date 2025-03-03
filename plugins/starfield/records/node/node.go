@@ -21,7 +21,15 @@ type Node interface {
 
 type LocalNode struct{}
 
-func NewLocalNode() *LocalNode { return &LocalNode{} }
+type RemoteNode struct {
+	Addr   string
+	Config *ssh.ClientConfig
+	client *ssh.Client
+}
+
+func NewLocalNode() *LocalNode {
+	return &LocalNode{}
+}
 
 func (ln *LocalNode) Run(cmd string) (string, error) {
 	Logger.Info("running local", "command", cmd)
@@ -41,10 +49,30 @@ func (ln *LocalNode) Run(cmd string) (string, error) {
 	return result, nil
 }
 
-type RemoteNode struct {
-	Addr   string
-	Config *ssh.ClientConfig
-	client *ssh.Client
+func (rn *RemoteNode) Run(cmd string) (string, error) {
+	Logger.Info("running remote", "addr", rn.Addr, "command", cmd)
+	if err := rn.ensureConnected(); err != nil {
+		Logger.Error(err, "remote connect error", "addr", rn.Addr)
+		return "", err
+	}
+	session, err := rn.client.NewSession()
+	if err != nil {
+		Logger.Error(err, "remote session error", "addr", rn.Addr)
+		return "", err
+	}
+	defer session.Close()
+	var outBuf, errBuf bytes.Buffer
+	session.Stdout = &outBuf
+	session.Stderr = &errBuf
+	if err := session.Run(cmd); err != nil {
+		out := outBuf.String() + errBuf.String()
+		Logger.Error(err, "remote error", "addr", rn.Addr, "command", cmd, "output", out)
+		return out, fmt.Errorf("remote: %w (output: %s)", err, out)
+	}
+	out := outBuf.String() + errBuf.String()
+	result := strings.TrimSpace(string(out))
+	Logger.Info("local success", "command", cmd, "result", result)
+	return result, nil
 }
 
 func NewRemoteNodeWithPassword(user, addr, password string) (*RemoteNode, error) {
@@ -90,32 +118,6 @@ func (rn *RemoteNode) ensureConnected() error {
 	}
 	rn.client = c
 	return nil
-}
-
-func (rn *RemoteNode) Run(cmd string) (string, error) {
-	Logger.Info("running remote", "addr", rn.Addr, "command", cmd)
-	if err := rn.ensureConnected(); err != nil {
-		Logger.Error(err, "remote connect error", "addr", rn.Addr)
-		return "", err
-	}
-	session, err := rn.client.NewSession()
-	if err != nil {
-		Logger.Error(err, "remote session error", "addr", rn.Addr)
-		return "", err
-	}
-	defer session.Close()
-	var outBuf, errBuf bytes.Buffer
-	session.Stdout = &outBuf
-	session.Stderr = &errBuf
-	if err := session.Run(cmd); err != nil {
-		out := outBuf.String() + errBuf.String()
-		Logger.Error(err, "remote error", "addr", rn.Addr, "command", cmd, "output", out)
-		return out, fmt.Errorf("remote: %w (output: %s)", err, out)
-	}
-	out := outBuf.String() + errBuf.String()
-	result := strings.TrimSpace(string(out))
-	Logger.Info("local success", "command", cmd, "result", result)
-	return result, nil
 }
 
 func (rn *RemoteNode) Close() error {
