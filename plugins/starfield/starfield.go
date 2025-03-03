@@ -9,16 +9,15 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-var log logr.Logger
+var Log logr.Logger
 
 var Plugin = proxy.Plugin{
 	Name: "Starfield",
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
-		log := logr.FromContextOrDiscard(ctx)
-		containers.Log = log
-		log.Info("Hello from Stafield :)")
-		event.Subscribe(p.Event(), 0, chooseInitial())
+		Log := logr.FromContextOrDiscard(ctx)
+		Log.Info("Hello from Stafield :)")
 		containers.CreateContainer()
+		event.Subscribe(p.Event(), 0, chooseInitial())
 		return nil
 	},
 }
@@ -26,6 +25,6 @@ var Plugin = proxy.Plugin{
 func chooseInitial() func(*proxy.PlayerChooseInitialServerEvent) {
 	return func(e *proxy.PlayerChooseInitialServerEvent) {
 		player := e.Player()
-		log.Info("Choose initial server event for: ", player.Username())
+		Log.Info("Choose initial server event for: ", player.Username())
 	}
 }

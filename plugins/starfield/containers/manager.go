@@ -1,20 +1,17 @@
 package containers
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
-
-	"github.com/go-logr/logr"
+	"starfield/plugins/starfield"
+	"starfield/plugins/starfield/records/node"
 )
 
-var Log logr.Logger
-
 func CreateContainer() {
-	Log.Info("Creating new container...")
-	cmd := exec.Command("docker", "ps")
-	cmd.Stdout = os.Stdout
-	if err := cmd.Run(); err != nil {
-		fmt.Println("could not run command: ", err)
+	starfield.Log.Info("test")
+	ln := node.NewLocalNode()
+	out, err := ln.Run("echo 'Hello from local'")
+	if err != nil {
+		starfield.Log.Info("manager: local error: %v\n", err)
+	} else {
+		starfield.Log.Info("manager:Local: %s\n", out)
 	}
 }
