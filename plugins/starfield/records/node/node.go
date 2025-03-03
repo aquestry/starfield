@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -35,8 +36,9 @@ func (ln *LocalNode) Run(cmd string) (string, error) {
 		Logger.Error(err, "local error", "command", cmd, "output", string(out))
 		return string(out), fmt.Errorf("local: %w (output: %s)", err, out)
 	}
-	Logger.Info("local success", "command", cmd)
-	return string(out), nil
+	result := strings.TrimSpace(string(out))
+	Logger.Info("local success", "command", cmd, "result", result)
+	return result, nil
 }
 
 type RemoteNode struct {
@@ -106,13 +108,14 @@ func (rn *RemoteNode) Run(cmd string) (string, error) {
 	session.Stdout = &outBuf
 	session.Stderr = &errBuf
 	if err := session.Run(cmd); err != nil {
-		output := outBuf.String() + errBuf.String()
-		Logger.Error(err, "remote error", "addr", rn.Addr, "command", cmd, "output", output)
-		return output, fmt.Errorf("remote: %w (output: %s)", err, output)
+		out := outBuf.String() + errBuf.String()
+		Logger.Error(err, "remote error", "addr", rn.Addr, "command", cmd, "output", out)
+		return out, fmt.Errorf("remote: %w (output: %s)", err, out)
 	}
-	output := outBuf.String() + errBuf.String()
-	Logger.Info("remote success", "addr", rn.Addr, "command", cmd)
-	return output, nil
+	out := outBuf.String() + errBuf.String()
+	result := strings.TrimSpace(string(out))
+	Logger.Info("local success", "command", cmd, "result", result)
+	return result, nil
 }
 
 func (rn *RemoteNode) Close() error {
