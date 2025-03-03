@@ -34,6 +34,7 @@ var Plugin = proxy.Plugin{
 }
 
 func (p *plugin) init(e *proxy.ReadyEvent) {
-	containers.GlobalManager.AddNode("local", node.NewLocalNode())
+	node, _ := node.NewRemoteNodeWithKey("root", "188.34.205.94:22", "C:\\Users\\anton\\Documents\\Projekte\\Developing\\Auth\\Hetzner\\Privat\\private.txt", "")
+	containers.GlobalManager.AddNode("local", node)
 	containers.CreateContainer("lobby", "anton691/simple-lobby:latest", 25566)
 }

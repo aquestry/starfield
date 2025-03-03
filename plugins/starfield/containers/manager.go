@@ -24,7 +24,7 @@ func CreateContainer(name, template string, port int) {
 		Log.Error(err, "CreateContainer: docker command failed", "command", cmd)
 		return
 	}
-	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", n.Addr(), port))
 	if err != nil {
 		Log.Error(err, "CreateContainer: failed to resolve TCP address", "port", port)
 		return
