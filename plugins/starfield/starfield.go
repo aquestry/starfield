@@ -3,6 +3,7 @@ package starfield
 import (
 	"context"
 	"starfield/plugins/starfield/containers"
+	"starfield/plugins/starfield/events"
 	"starfield/plugins/starfield/records/node"
 
 	"github.com/go-logr/logr"
@@ -11,7 +12,6 @@ import (
 )
 
 var log logr.Logger
-var VelocitySecret string
 
 type plugin struct {
 	proxy *proxy.Proxy
@@ -21,24 +21,16 @@ var Plugin = proxy.Plugin{
 	Name: "Starfield",
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
 		log = logr.FromContextOrDiscard(ctx)
-
 		containers.Log = log
+		events.Log = log
 		node.Logger = log
-
 		pl := &plugin{proxy: p}
 		containers.P = *pl.proxy
-
-		event.Subscribe(p.Event(), 0, pl.chooseInitial)
+		event.Subscribe(p.Event(), 0, events.ChooseInitial)
+		event.Subscribe(p.Event(), 0, events.PreShutdownEvent)
 		event.Subscribe(p.Event(), 0, pl.init)
-
 		return nil
 	},
-}
-
-func (p *plugin) chooseInitial(e *proxy.PlayerChooseInitialServerEvent) {
-	player := e.Player()
-	log.Info("Choose initial server", "player", player.Username())
-	e.SetInitialServer(containers.Lobby)
 }
 
 func (p *plugin) init(e *proxy.ReadyEvent) {

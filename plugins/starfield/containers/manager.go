@@ -2,42 +2,56 @@ package containers
 
 import (
 	"fmt"
+	"net"
 
-	"starfield/plugins/starfield/records/node"
-
+	"github.com/go-logr/logr"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-type ServerRecord struct {
-	Name string
-	Node node.Node
-	Info proxy.RegisteredServer
-}
+var P proxy.Proxy
+var Lobby proxy.RegisteredServer
+var Log logr.Logger
 
-type NodeManager struct {
-	Nodes   map[string]node.Node
-	Servers map[string]ServerRecord
-}
-
-var GlobalManager = &NodeManager{
-	Nodes:   make(map[string]node.Node),
-	Servers: make(map[string]ServerRecord),
-}
-
-func (nm *NodeManager) AddNode(name string, n node.Node) {
-	nm.Nodes[name] = n
-}
-
-func (nm *NodeManager) AddServer(serverName, nodeName string, info proxy.RegisteredServer) error {
-	n, ok := nm.Nodes[nodeName]
+func CreateContainer(name, template string, port int) {
+	n, ok := GlobalManager.Nodes["local"]
 	if !ok {
-		return fmt.Errorf("node %s not found", nodeName)
+		Log.Error(fmt.Errorf("node 'local' not found"), "CreateContainer: local node not found")
+		return
 	}
-	nm.Servers[serverName] = ServerRecord{Name: serverName, Node: n, Info: info}
-	return nil
+	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s -p %d:25565 %s", name, P.Config().Forwarding.VelocitySecret, port, template)
+	_, err := n.Run(cmd)
+	if err != nil {
+		Log.Error(err, "CreateContainer: docker command failed", "command", cmd)
+		return
+	}
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if err != nil {
+		Log.Error(err, "CreateContainer: failed to resolve TCP address", "port", port)
+		return
+	}
+	serverInfo := proxy.NewServerInfo(name, addr)
+	regServer, err := P.Register(serverInfo)
+	if err != nil {
+		Log.Error(err, "CreateContainer: failed to register server", "serverInfo", serverInfo)
+		return
+	}
+	Lobby = regServer
+	err = GlobalManager.AddServer(name, "local", Lobby)
+	if err != nil {
+		Log.Error(err, "CreateContainer: failed to add server to GlobalManager", "serverName", name)
+	}
 }
 
-func (nm *NodeManager) GetServerNode(serverName string) (node.Node, bool) {
-	rec, ok := nm.Servers[serverName]
-	return rec.Node, ok
+func DeleteContainer(name string) {
+	n, ok := GlobalManager.Nodes["local"]
+	if !ok {
+		Log.Error(fmt.Errorf("node 'local' not found"), "CreateContainer: local node not found")
+		return
+	}
+	cmd := fmt.Sprintf("docker rm %s --force", name)
+	_, err := n.Run(cmd)
+	if err != nil {
+		Log.Error(err, "CreateContainer: docker command failed", "command", cmd)
+		return
+	}
 }
