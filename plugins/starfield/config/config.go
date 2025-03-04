@@ -56,26 +56,48 @@ func LoadConfig() {
 		os.Exit(0)
 		return
 	}
-
+	count := 0
+	local := false
 	for _, n := range c.Nodes {
 		switch n.Type {
 		case "local":
-			containers.GlobalContainers.AddNode("local", node.NewLocalNode())
+			count++
+			if !local {
+				local = true
+				containers.GlobalContainers.AddNode("local", node.NewLocalNode())
+			}
 		case "externKey":
-			Logger.Info("config", "name", n.Name, "user", n.User, "IP", n.IP, "port", n.Port, "keypath", n.KeyPath, "passPhrase", n.PassPhrase)
+			if n.Name == "local" {
+				Logger.Info("config", "error", "Name of node can't be 'local'!")
+				os.Exit(0)
+				continue
+			}
 			rn, err := node.NewRemoteNodeWithKey(n.Name, n.User, fmt.Sprintf("%s:%d", n.IP, n.Port), n.KeyPath, n.PassPhrase)
 			if err != nil {
 				Logger.Error(err, "Failed to create remote node with key", "node", n.Name)
 				continue
 			}
+			count++
 			containers.GlobalContainers.AddNode(n.Name, rn)
 		case "externPass":
+			if n.Name == "local" {
+				Logger.Info("config", "error", "Name of node can't be 'local'!")
+				os.Exit(0)
+				continue
+			}
 			rn, err := node.NewRemoteNodeWithPassword(n.Name, n.User, fmt.Sprintf("%s:%d", n.IP, n.Port), n.Password)
 			if err != nil {
 				Logger.Error(err, "Failed to create remote node with password", "node", n.Name)
 				continue
 			}
+			count++
 			containers.GlobalContainers.AddNode(n.Name, rn)
 		}
+	}
+	Logger.Info("config", "nodes", count)
+	Logger.Info("config", "local", local)
+	if count == 0 {
+		Logger.Info("config", "error", "You need atleast one node!")
+		os.Exit(0)
 	}
 }

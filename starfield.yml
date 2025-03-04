@@ -5,3 +5,4 @@ nodes:
   user: root
   port: 22
   keyPath: "C:\\Users\\anton\\Documents\\Projekte\\Developing\\Auth\\Hetzner\\Privat\\private.txt"
+- type: local

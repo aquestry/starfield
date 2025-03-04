@@ -10,4 +10,5 @@ import (
 func Ready(e *proxy.ReadyEvent) {
 	config.LoadConfig()
 	containers.CreateLobby()
+	Log.Info("event", "type", "ReadyEvent")
 }
