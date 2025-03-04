@@ -22,7 +22,6 @@ func GetLobbyForPlayer(player proxy.Player) proxy.RegisteredServer {
 }
 
 func CreateLobby() {
-	Logger.Info("create debug")
 	name := "lobby-"
 	prefix, _ := generateRandomString(4)
 	name += prefix
