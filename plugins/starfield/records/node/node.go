@@ -3,8 +3,8 @@ package node
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -19,11 +19,13 @@ var Logger logr.Logger
 type Node interface {
 	Run(cmd string) (string, error)
 	Addr() string
+	Name() string
 }
 
 type LocalNode struct{}
 
 type RemoteNode struct {
+	name     string
 	FullAddr string
 	Config   *ssh.ClientConfig
 	client   *ssh.Client
@@ -55,18 +57,18 @@ func (ln *LocalNode) Run(cmd string) (string, error) {
 	return result, nil
 }
 
-func NewRemoteNodeWithPassword(user, fullAddr, password string) (*RemoteNode, error) {
+func NewRemoteNodeWithPassword(name, user, fullAddr, password string) (*RemoteNode, error) {
 	config := &ssh.ClientConfig{
 		User:            user,
 		Auth:            []ssh.AuthMethod{ssh.Password(password)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         5 * time.Second,
 	}
-	return &RemoteNode{FullAddr: fullAddr, Config: config}, nil
+	return &RemoteNode{name: name, FullAddr: fullAddr, Config: config}, nil
 }
 
-func NewRemoteNodeWithKey(user, fullAddr, keyPath, passphrase string) (*RemoteNode, error) {
-	data, err := ioutil.ReadFile(keyPath)
+func NewRemoteNodeWithKey(name, user, fullAddr, keyPath, passphrase string) (*RemoteNode, error) {
+	data, err := os.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +87,7 @@ func NewRemoteNodeWithKey(user, fullAddr, keyPath, passphrase string) (*RemoteNo
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         5 * time.Second,
 	}
-	return &RemoteNode{FullAddr: fullAddr, Config: config}, nil
+	return &RemoteNode{name: name, FullAddr: fullAddr, Config: config}, nil
 }
 
 func (rn *RemoteNode) Addr() string {
@@ -94,6 +96,14 @@ func (rn *RemoteNode) Addr() string {
 		return rn.FullAddr
 	}
 	return host
+}
+
+func (rn *RemoteNode) Name() string {
+	return rn.name
+}
+
+func (ln *LocalNode) Name() string {
+	return "local"
 }
 
 func (rn *RemoteNode) Port() string {

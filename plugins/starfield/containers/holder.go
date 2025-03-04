@@ -15,12 +15,12 @@ type ServerRecord struct {
 
 type NodeManager struct {
 	Nodes   map[string]node.Node
-	Servers []ServerRecord
+	Servers map[string]ServerRecord
 }
 
 var GlobalManager = &NodeManager{
 	Nodes:   make(map[string]node.Node),
-	Servers: []ServerRecord{},
+	Servers: make(map[string]ServerRecord),
 }
 
 func (nm *NodeManager) AddNode(name string, n node.Node) {
@@ -30,27 +30,32 @@ func (nm *NodeManager) AddNode(name string, n node.Node) {
 func (nm *NodeManager) AddServer(serverName, nodeName string, info proxy.RegisteredServer) error {
 	n, ok := nm.Nodes[nodeName]
 	if !ok {
-		return fmt.Errorf("node %s not found", nodeName)
+		return fmt.Errorf("node %q not found", nodeName)
 	}
-	nm.Servers = append(nm.Servers, ServerRecord{Name: serverName, Node: n, Info: info})
+	nm.Servers[serverName] = ServerRecord{Name: serverName, Node: n, Info: info}
 	return nil
 }
 
 func (nm *NodeManager) RemoveServer(serverName string) error {
-	index := -1
-	for i, rec := range nm.Servers {
-		if rec.Name == serverName {
-			index = i
-			break
-		}
-	}
-	if index == -1 {
+	if _, exists := nm.Servers[serverName]; !exists {
 		return fmt.Errorf("server %s not found", serverName)
 	}
-	nm.Servers = append(nm.Servers[:index], nm.Servers[index+1:]...)
+	delete(nm.Servers, serverName)
 	return nil
 }
 
+func (nm *NodeManager) GetServer(serverName string) (ServerRecord, error) {
+	server, exists := nm.Servers[serverName]
+	if !exists {
+		return ServerRecord{}, fmt.Errorf("server %s not found", serverName)
+	}
+	return server, nil
+}
+
 func (nm *NodeManager) GetServers() []ServerRecord {
-	return nm.Servers
+	servers := make([]ServerRecord, 0, len(nm.Servers))
+	for _, rec := range nm.Servers {
+		servers = append(servers, rec)
+	}
+	return servers
 }
