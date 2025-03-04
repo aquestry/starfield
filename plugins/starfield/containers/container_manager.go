@@ -9,13 +9,14 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-var ProxyInstance proxy.Proxy
+var ProxyInstance *proxy.Proxy
 var Logger logr.Logger
 
 func CreateContainer(name, tag, template string) {
 	n := getNodeWithLowestInstances()
-	port, _ := n.GetFreePort()
+	port := n.GetFreePort()
 	n.UpdateFreePort()
+	fmt.Println("PORT", port)
 	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s -p %d:25565 %s",
 		name, ProxyInstance.Config().Forwarding.VelocitySecret, port, template)
 	_, err := n.Run(cmd)

@@ -113,25 +113,22 @@ func (rn *RemoteNode) Name() string {
 	return rn.name
 }
 
-func (rn *RemoteNode) GetFreePort() (int, error) {
-	if rn.freePort == 0 {
-		out, err := rn.Run("python3", "-c", "import socket; s=socket.socket(); s.bind(('0.0.0.0', 0)); print(s.getsockname()[1]); s.close()")
-		if err != nil {
-			return 0, err
-		}
-		p, e := strconv.Atoi(strings.TrimSpace(out))
-		if e != nil {
-			return 0, e
-		}
-		rn.freePort = p
-	}
-	return rn.freePort, nil
+func (rn *RemoteNode) GetFreePort() int {
+	return rn.freePort
 }
 
-func (rn *RemoteNode) UpdateFreePort() error {
-	rn.freePort = 0
-	_, err := rn.GetFreePort()
-	return err
+func (rn *RemoteNode) UpdateFreePort() {
+	out, err := rn.Run(`python3 -c "import socket; s=socket.socket(); s.bind(('0.0.0.0', 0)); print(s.getsockname()[1]); s.close()"`)
+	if err != nil {
+		rn.freePort = 0
+		return
+	}
+	p, e := strconv.Atoi(strings.TrimSpace(out))
+	if e != nil {
+		rn.freePort = 0
+		return
+	}
+	rn.freePort = p
 }
 
 func (rn *RemoteNode) Close() error {

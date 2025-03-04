@@ -14,15 +14,12 @@ import (
 
 var log logr.Logger
 
-type plugin struct {
-	p *proxy.Proxy
-}
-
 var Plugin = proxy.Plugin{
 	Name: "Starfield",
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
 		log = logr.FromContextOrDiscard(ctx)
-		containers.ProxyInstance = *p
+
+		containers.ProxyInstance = p
 		events.Log = log
 		node.Logger = log
 		containers.Logger = log
@@ -30,7 +27,7 @@ var Plugin = proxy.Plugin{
 
 		event.Subscribe(p.Event(), 0, events.ChooseInitial)
 		event.Subscribe(p.Event(), 0, events.PreShutdownEvent)
-		event.Subscribe(p.Event(), 0, events.Init)
+		event.Subscribe(p.Event(), 0, events.Ready)
 
 		return nil
 	},

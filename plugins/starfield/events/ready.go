@@ -7,7 +7,7 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-func Init(e *proxy.ReadyEvent) {
+func Ready(e *proxy.ReadyEvent) {
 	config.LoadConfig()
 	containers.CreateLobby()
 }

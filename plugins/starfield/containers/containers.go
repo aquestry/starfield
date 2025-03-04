@@ -26,6 +26,7 @@ var GlobalContainers = &Containers{
 
 func (c *Containers) AddNode(name string, n node.Node) {
 	c.Nodes[name] = n
+	n.UpdateFreePort()
 }
 
 func (c *Containers) AddContainer(containerName, tag, nodeName string, info proxy.RegisteredServer) error {

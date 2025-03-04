@@ -7,7 +7,7 @@ import (
 )
 
 func PreShutdownEvent(e *proxy.PreShutdownEvent) {
-	for _, c := range containers.GlobalContainers.Containers {
+	for _, c := range containers.GlobalContainers.GetAllContainers() {
 		containers.DeleteContainer(c.Name)
 	}
 	Log.Info("event", "type", "PlayerChooseInitialServerEvent")

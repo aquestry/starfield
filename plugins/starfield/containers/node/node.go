@@ -9,7 +9,7 @@ type Node interface {
 	Addr() string
 	Port() string
 	Name() string
-	GetFreePort() (int, error)
-	UpdateFreePort() error
+	GetFreePort() int
+	UpdateFreePort()
 	Close() error
 }
