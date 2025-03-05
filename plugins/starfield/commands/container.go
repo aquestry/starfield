@@ -1,29 +1,56 @@
 package commands
 
 import (
+	"fmt"
+
 	"starfield/plugins/starfield/containers"
-	"strconv"
 
 	"go.minekube.com/brigodier"
 	"go.minekube.com/common/minecraft/component"
 	"go.minekube.com/gate/pkg/command"
+	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
 func ContainerCommand() brigodier.LiteralNodeBuilder {
 	listContainers := command.Command(func(ctx *command.Context) error {
 		containerList := containers.GetContainers()
 		if len(containerList) == 0 {
-			message := "No containers are currently registered."
-			ctx.Source.SendMessage(&component.Text{Content: message})
-			return nil
+			return ctx.SendMessage(&component.Text{
+				Content: "No containers are currently registered.",
+			})
 		}
-		message := "Available containers:\n"
+		msg := "Available containers:\n"
 		for _, container := range containerList {
-			message += "- " + container.Name + " (" + container.IP + ":" + strconv.Itoa(container.Port) + ")\n"
+			msg += fmt.Sprintf("- %s (%s:%d)\n", container.Name, container.IP, container.Port)
 		}
-		ctx.Source.SendMessage(&component.Text{Content: message})
-		return nil
+		return ctx.SendMessage(&component.Text{Content: msg})
 	})
+
+	connectContainer := command.Command(func(ctx *command.Context) error {
+		player, ok := ctx.Source.(proxy.Player)
+		if !ok {
+			return ctx.SendMessage(&component.Text{
+				Content: "Only players can use this command.",
+			})
+		}
+		containerName := ctx.String("name")
+		container, err := containers.GetContainer(containerName)
+		if err != nil {
+			return ctx.SendMessage(&component.Text{
+				Content: fmt.Sprintf("Container '%s' not found.", containerName),
+			})
+		}
+		player.CreateConnectionRequest(container.Info).Connect(ctx)
+		return ctx.SendMessage(&component.Text{
+			Content: fmt.Sprintf("Connecting to container '%s'...", containerName),
+		})
+	})
+
 	return brigodier.Literal("container").
-		Then(brigodier.Literal("list").Executes(listContainers))
+		Then(
+			brigodier.Literal("list").Executes(listContainers),
+		).Then(
+		brigodier.Literal("connect").
+			Then(brigodier.Argument("name", brigodier.StringWord).Executes(connectContainer)),
+	)
 }
