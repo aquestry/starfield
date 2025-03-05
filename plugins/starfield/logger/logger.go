@@ -1,5 +1,5 @@
-package events
+package logger
 
 import "github.com/go-logr/logr"
 
-var Log logr.Logger
+var L logr.Logger

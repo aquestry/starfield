@@ -2,7 +2,6 @@ package containers
 
 import (
 	"fmt"
-	"net"
 	"starfield/plugins/starfield/containers/node"
 
 	"github.com/go-logr/logr"
@@ -14,35 +13,18 @@ var Logger logr.Logger
 
 func CreateContainer(name, tag, template string) {
 	n := getNodeWithLowestInstances()
-	port := n.GetFreePort()
-	n.UpdateFreePort()
-	fmt.Println("PORT", port)
-	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s -p %d:25565 %s",
-		name, ProxyInstance.Config().Forwarding.VelocitySecret, port, template)
+	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s -p 0:25565 %s",
+		name, ProxyInstance.Config().Forwarding.VelocitySecret, template)
 	_, err := n.Run(cmd)
 	if err != nil {
 		Logger.Error(err, "CreateContainer failed", "command", cmd)
 		return
 	}
-	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", n.Addr(), port))
-	if err != nil {
-		Logger.Error(err, "ResolveTCPAddr failed", "port", port)
-		return
-	}
-	info := proxy.NewServerInfo(name, addr)
-	reg, err := ProxyInstance.Register(info)
-	if err != nil {
-		Logger.Error(err, "Register failed", "serverInfo", info)
-		return
-	}
-	err = GlobalContainers.AddContainer(name, tag, n.Name(), reg)
-	if err != nil {
-		Logger.Error(err, "AddContainer failed", "containerName", name)
-	}
+	RegisterContainer(name, tag, n.Addr(), n)
 }
 
 func DeleteContainer(name string) {
-	srv, err := GlobalContainers.GetContainer(name)
+	srv, err := GetContainer(name)
 	if err != nil {
 		Logger.Error(err, "container not found")
 		return
@@ -57,10 +39,10 @@ func DeleteContainer(name string) {
 func getNodeWithLowestInstances() (selectedNode node.Node) {
 	minCount := int(^uint(0) >> 1)
 	counts := make(map[string]int)
-	for _, srv := range GlobalContainers.Containers {
+	for _, srv := range GetContainers() {
 		counts[srv.Node.Addr()]++
 	}
-	for _, n := range GlobalContainers.Nodes {
+	for _, n := range GetNodes() {
 		c := counts[n.Addr()]
 		if c < minCount {
 			minCount = c

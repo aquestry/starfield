@@ -10,7 +10,7 @@ import (
 var Default proxy.RegisteredServer
 
 func GetLobbyForPlayer(player proxy.Player) proxy.RegisteredServer {
-	for _, srv := range GlobalContainers.GetAllContainers() {
+	for _, srv := range GetContainers() {
 		if srv.Tag == "lobby" {
 			if srv.Info.Players().Len() < 20 {
 				Default = srv.Info

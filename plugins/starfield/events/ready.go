@@ -3,6 +3,7 @@ package events
 import (
 	"starfield/plugins/starfield/config"
 	"starfield/plugins/starfield/containers"
+	"starfield/plugins/starfield/logger"
 
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
@@ -10,5 +11,5 @@ import (
 func Ready(e *proxy.ReadyEvent) {
 	config.LoadConfig()
 	containers.CreateLobby()
-	Log.Info("event", "type", "ReadyEvent")
+	logger.L.Info("event", "type", "ReadyEvent")
 }

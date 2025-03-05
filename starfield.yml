@@ -1,8 +1,2 @@
 nodes:
-- type: externKey
-  name: dev
-  ip: 188.34.205.94
-  user: root
-  port: 22
-  keyPath: "C:\\Users\\anton\\Documents\\Projekte\\Developing\\Auth\\Hetzner\\Privat\\private.txt"
 - type: local

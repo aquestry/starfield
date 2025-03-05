@@ -64,7 +64,7 @@ func LoadConfig() {
 			count++
 			if !local {
 				local = true
-				containers.GlobalContainers.AddNode("local", node.NewLocalNode())
+				containers.RegisterNode(node.NewLocalNode())
 			}
 		case "externKey":
 			if n.Name == "local" {
@@ -78,7 +78,7 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			containers.GlobalContainers.AddNode(n.Name, rn)
+			containers.RegisterNode(rn)
 		case "externPass":
 			if n.Name == "local" {
 				Logger.Info("config", "error", "Name of node can't be 'local'!")
@@ -91,7 +91,7 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			containers.GlobalContainers.AddNode(n.Name, rn)
+			containers.RegisterNode(rn)
 		}
 	}
 	Logger.Info("config", "nodes", count)
