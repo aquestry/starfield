@@ -3,6 +3,7 @@ package containers
 import (
 	"fmt"
 	"starfield/plugins/starfield/containers/node"
+	"time"
 
 	"github.com/go-logr/logr"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
@@ -12,6 +13,7 @@ var ProxyInstance *proxy.Proxy
 var Logger logr.Logger
 
 func CreateContainer(name, tag, template string) {
+	start := time.Now()
 	n := getNodeWithLowestInstances()
 	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s -p 0:25565 %s",
 		name, ProxyInstance.Config().Forwarding.VelocitySecret, template)
@@ -20,7 +22,7 @@ func CreateContainer(name, tag, template string) {
 		Logger.Error(err, "CreateContainer failed", "command", cmd)
 		return
 	}
-	RegisterContainer(name, tag, n.Addr(), n)
+	RegisterContainer(name, tag, n.Addr(), n, start)
 }
 
 func DeleteContainer(name string) {

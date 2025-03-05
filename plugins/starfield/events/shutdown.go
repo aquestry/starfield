@@ -7,9 +7,9 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-func PreShutdownEvent(e *proxy.PreShutdownEvent) {
+func ShutdownEvent(e *proxy.ShutdownEvent) {
 	for _, c := range containers.GetContainers() {
 		containers.DeleteContainer(c.Name)
 	}
-	logger.L.Info("event", "type", "PlayerChooseInitialServerEvent")
+	logger.L.Info("event", "type", "ShutdownEvent")
 }

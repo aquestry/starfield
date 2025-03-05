@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net"
 	"starfield/plugins/starfield/containers/node"
+	"starfield/plugins/starfield/logger"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
@@ -21,7 +23,7 @@ type Container struct {
 
 var clist []Container
 
-func RegisterContainer(name, tag, ip string, n node.Node) (Container, error) {
+func RegisterContainer(name, tag, ip string, n node.Node, start time.Time) (Container, error) {
 	p, e := n.Run("docker", "port", name, "25565")
 	if e != nil {
 		return Container{}, e
@@ -31,21 +33,20 @@ func RegisterContainer(name, tag, ip string, n node.Node) (Container, error) {
 		return Container{}, e
 	}
 	port := parts[1]
-
 	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", n.Addr(), port))
 	info := proxy.NewServerInfo(name, addr)
-
 	portNumber, err := strconv.Atoi(port)
 	if err != nil {
 		return Container{}, e
 	}
-
 	server, err := ProxyInstance.Register(info)
 	if err != nil {
 		return Container{}, e
 	}
 	c := Container{name, tag, ip, n, server, portNumber}
 	clist = append(clist, c)
+	duration := time.Since(start)
+	logger.L.Info("create", "type", "container", "time", duration)
 	return c, nil
 }
 

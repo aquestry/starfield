@@ -9,7 +9,7 @@ import (
 
 func ChooseInitial(e *proxy.PlayerChooseInitialServerEvent) {
 	player := e.Player()
-	srv := containers.GetLobbyForPlayer(player)
-	e.SetInitialServer(srv)
-	logger.L.Info("event", "type", "PlayerChooseInitialServerEvent", "player", player.Username(), "result", srv.ServerInfo().Name())
+	s := containers.GetTargetLobby()
+	e.SetInitialServer(s)
+	logger.L.Info("event", "type", "PlayerChooseInitialServerEvent", "player", player.Username(), "result", s.ServerInfo().Name())
 }
