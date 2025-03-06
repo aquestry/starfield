@@ -1,10 +1,9 @@
 package main
 
 import (
-	"starfield/plugins/starfield"
-
 	"go.minekube.com/gate/cmd/gate"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
+	"starfield/plugins/starfield"
 )
 
 func main() {
