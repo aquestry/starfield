@@ -20,6 +20,7 @@ var Plugin = proxy.Plugin{
 
 		event.Subscribe(p.Event(), 0, events.ChooseInitial)
 		event.Subscribe(p.Event(), 0, events.ShutdownEvent)
+		event.Subscribe(p.Event(), 0, events.PluginMessage)
 		event.Subscribe(p.Event(), 0, events.Ready)
 
 		p.Command().Register(commands.ContainerCommand())
