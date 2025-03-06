@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"starfield/plugins/starfield/containers"
+	"starfield/plugins/starfield/orch"
 
 	"go.minekube.com/brigodier"
 	"go.minekube.com/common/minecraft/component"
@@ -13,13 +13,13 @@ import (
 
 func ContainerCommand() brigodier.LiteralNodeBuilder {
 	listContainers := command.Command(func(ctx *command.Context) error {
-		containerList := containers.GetContainers()
+		containerList := orch.GetContainers()
 		if len(containerList) == 0 {
 			return ctx.SendMessage(&component.Text{
-				Content: "No containers are currently registered.",
+				Content: "No orch are currently registered.",
 			})
 		}
-		msg := "Available containers:\n"
+		msg := "Available orch:\n"
 		for _, container := range containerList {
 			msg += fmt.Sprintf("- %s (%s:%d)\n", container.Name, container.IP, container.Port)
 		}
@@ -34,7 +34,7 @@ func ContainerCommand() brigodier.LiteralNodeBuilder {
 			})
 		}
 		containerName := ctx.String("name")
-		container, err := containers.GetContainer(containerName)
+		container, err := orch.GetContainer(containerName)
 		if err != nil {
 			return ctx.SendMessage(&component.Text{
 				Content: fmt.Sprintf("Container '%s' not found.", containerName),

@@ -1,8 +1,8 @@
-package containers
+package orch
 
 import (
 	"fmt"
-	"starfield/plugins/starfield/containers/node"
+	"starfield/plugins/starfield/orch/node"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -36,6 +36,7 @@ func DeleteContainer(name string) {
 	if e != nil {
 		Logger.Error(e, "DeleteContainer failed", "command", cmd)
 	}
+	Remove(name)
 }
 
 func getNodeWithLowestInstances() (selectedNode node.Node) {

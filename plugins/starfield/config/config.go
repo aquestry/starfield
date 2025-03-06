@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"starfield/plugins/starfield/containers"
-	"starfield/plugins/starfield/containers/node"
+	"starfield/plugins/starfield/orch"
+	"starfield/plugins/starfield/orch/node"
 
 	"github.com/go-logr/logr"
 	"gopkg.in/yaml.v2"
@@ -64,13 +64,12 @@ func LoadConfig() {
 			count++
 			if !local {
 				local = true
-				containers.RegisterNode(node.NewLocalNode())
+				orch.RegisterNode(node.NewLocalNode())
 			}
 		case "externKey":
 			if n.Name == "local" {
 				Logger.Info("config", "error", "Name of node can't be 'local'!")
 				os.Exit(0)
-				continue
 			}
 			rn, err := node.NewRemoteNodeWithKey(n.Name, n.User, fmt.Sprintf("%s:%d", n.IP, n.Port), n.KeyPath, n.PassPhrase)
 			if err != nil {
@@ -78,12 +77,11 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			containers.RegisterNode(rn)
+			orch.RegisterNode(rn)
 		case "externPass":
 			if n.Name == "local" {
 				Logger.Info("config", "error", "Name of node can't be 'local'!")
 				os.Exit(0)
-				continue
 			}
 			rn, err := node.NewRemoteNodeWithPassword(n.Name, n.User, fmt.Sprintf("%s:%d", n.IP, n.Port), n.Password)
 			if err != nil {
@@ -91,7 +89,7 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			containers.RegisterNode(rn)
+			orch.RegisterNode(rn)
 		}
 	}
 	Logger.Info("config", "nodes", count)

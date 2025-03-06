@@ -3,9 +3,9 @@ package starfield
 import (
 	"context"
 	"starfield/plugins/starfield/commands"
-	"starfield/plugins/starfield/containers"
 	"starfield/plugins/starfield/events"
 	"starfield/plugins/starfield/logger"
+	"starfield/plugins/starfield/orch"
 
 	"github.com/go-logr/logr"
 	"github.com/robinbraemer/event"
@@ -16,7 +16,7 @@ var Plugin = proxy.Plugin{
 	Name: "Starfield",
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
 		logger.L = logr.FromContextOrDiscard(ctx)
-		containers.ProxyInstance = p
+		orch.ProxyInstance = p
 
 		event.Subscribe(p.Event(), 0, events.ChooseInitial)
 		event.Subscribe(p.Event(), 0, events.ShutdownEvent)
