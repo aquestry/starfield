@@ -7,7 +7,7 @@ config:
     logPingRequests: false
     announceForge: false
   acceptTransfers: false
-  bungeePluginChannelEnabled: false
+  bungeePluginChannelEnabled: true
   builtinCommands: false
   requireBuiltinCommandPermissions: false
   announceProxyCommands: true
