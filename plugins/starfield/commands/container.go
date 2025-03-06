@@ -2,13 +2,11 @@ package commands
 
 import (
 	"fmt"
-
-	"starfield/plugins/starfield/orch"
-
 	"go.minekube.com/brigodier"
 	"go.minekube.com/common/minecraft/component"
 	"go.minekube.com/gate/pkg/command"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
+	"starfield/plugins/starfield/orch"
 )
 
 func ContainerCommand() brigodier.LiteralNodeBuilder {

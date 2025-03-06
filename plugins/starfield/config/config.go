@@ -2,12 +2,11 @@ package config
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
+	"gopkg.in/yaml.v2"
 	"os"
 	"starfield/plugins/starfield/orch"
 	"starfield/plugins/starfield/orch/node"
-
-	"github.com/go-logr/logr"
-	"gopkg.in/yaml.v2"
 )
 
 var Logger logr.Logger

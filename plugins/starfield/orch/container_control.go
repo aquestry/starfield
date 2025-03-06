@@ -2,11 +2,10 @@ package orch
 
 import (
 	"fmt"
-	"starfield/plugins/starfield/orch/node"
-	"time"
-
 	"github.com/go-logr/logr"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
+	"starfield/plugins/starfield/orch/node"
+	"time"
 )
 
 var ProxyInstance *proxy.Proxy

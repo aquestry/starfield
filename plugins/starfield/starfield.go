@@ -2,14 +2,13 @@ package starfield
 
 import (
 	"context"
+	"github.com/go-logr/logr"
+	"github.com/robinbraemer/event"
+	"go.minekube.com/gate/pkg/edition/java/proxy"
 	"starfield/plugins/starfield/commands"
 	"starfield/plugins/starfield/events"
 	"starfield/plugins/starfield/logger"
 	"starfield/plugins/starfield/orch"
-
-	"github.com/go-logr/logr"
-	"github.com/robinbraemer/event"
-	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
 var Plugin = proxy.Plugin{

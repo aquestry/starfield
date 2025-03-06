@@ -3,13 +3,12 @@ package node
 import (
 	"bytes"
 	"fmt"
+	"golang.org/x/crypto/ssh"
 	"net"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/crypto/ssh"
 )
 
 type RemoteNode struct {

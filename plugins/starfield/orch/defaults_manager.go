@@ -2,10 +2,9 @@ package orch
 
 import (
 	"crypto/rand"
+	"go.minekube.com/gate/pkg/edition/java/proxy"
 	"math/big"
 	"sync"
-
-	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
 var (
