@@ -1,8 +1,8 @@
 package events
 
 import (
+	"github.com/aquestry/starfield/plugins/starfield/logger"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
-	"starfield/plugins/starfield/logger"
 )
 
 func PluginMessage(e *proxy.PluginMessageEvent) {

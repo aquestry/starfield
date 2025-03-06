@@ -2,13 +2,13 @@ package starfield
 
 import (
 	"context"
+	"github.com/aquestry/starfield/plugins/starfield/commands"
+	"github.com/aquestry/starfield/plugins/starfield/events"
+	"github.com/aquestry/starfield/plugins/starfield/logger"
+	"github.com/aquestry/starfield/plugins/starfield/orch"
 	"github.com/go-logr/logr"
 	"github.com/robinbraemer/event"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
-	"starfield/plugins/starfield/commands"
-	"starfield/plugins/starfield/events"
-	"starfield/plugins/starfield/logger"
-	"starfield/plugins/starfield/orch"
 )
 
 var Plugin = proxy.Plugin{
@@ -25,5 +25,6 @@ var Plugin = proxy.Plugin{
 		p.Command().Register(commands.ContainerCommand())
 
 		return nil
+
 	},
 }

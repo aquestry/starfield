@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
+	"github.com/aquestry/starfield/plugins/starfield/orch"
+	"github.com/aquestry/starfield/plugins/starfield/orch/node"
 	"github.com/go-logr/logr"
 	"gopkg.in/yaml.v2"
 	"os"
-	"starfield/plugins/starfield/orch"
-	"starfield/plugins/starfield/orch/node"
 )
 
 var Logger logr.Logger
@@ -94,7 +94,7 @@ func LoadConfig() {
 	Logger.Info("config", "nodes", count)
 	Logger.Info("config", "local", local)
 	if count == 0 {
-		Logger.Info("config", "error", "You need atleast one node!")
+		Logger.Info("config", "error", "You need at least one node!")
 		os.Exit(0)
 	}
 }

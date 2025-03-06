@@ -2,3 +2,4 @@ go.mod
 go.sum
 starfield.yml
 .idea
+public

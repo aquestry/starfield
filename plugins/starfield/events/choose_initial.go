@@ -1,9 +1,9 @@
 package events
 
 import (
+	"github.com/aquestry/starfield/plugins/starfield/logger"
+	"github.com/aquestry/starfield/plugins/starfield/orch"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
-	"starfield/plugins/starfield/logger"
-	"starfield/plugins/starfield/orch"
 )
 
 func ChooseInitial(e *proxy.PlayerChooseInitialServerEvent) {

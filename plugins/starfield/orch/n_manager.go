@@ -1,7 +1,7 @@
 package orch
 
 import (
-	"starfield/plugins/starfield/orch/node"
+	"github.com/aquestry/starfield/plugins/starfield/orch/node"
 )
 
 var nlist []node.Node

@@ -11,9 +11,8 @@ var (
 	defaultMin            = 1
 	defaultMax            = 2
 	defaultServerTemplate = "anton691/simple-lobby:latest"
-
-	mutex        sync.Mutex
-	defaultLobby proxy.RegisteredServer
+	mutex                 sync.Mutex
+	defaultLobby          proxy.RegisteredServer
 )
 
 func GetTargetLobby() proxy.RegisteredServer {
