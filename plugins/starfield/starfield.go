@@ -9,6 +9,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/robinbraemer/event"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
+	"go.minekube.com/gate/pkg/edition/java/proxy/message"
 )
 
 var Plugin = proxy.Plugin{
@@ -16,7 +17,8 @@ var Plugin = proxy.Plugin{
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
 		logger.L = logr.FromContextOrDiscard(ctx)
 		orch.ProxyInstance = p
-
+		channel, _ := message.ChannelIdentifierFrom("nebula:main")
+		p.ChannelRegistrar().Register(channel)
 		event.Subscribe(p.Event(), 0, events.ChooseInitial)
 		event.Subscribe(p.Event(), 0, events.ShutdownEvent)
 		event.Subscribe(p.Event(), 0, events.PluginMessage)

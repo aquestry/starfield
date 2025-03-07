@@ -6,5 +6,6 @@ import (
 )
 
 func PluginMessage(e *proxy.PluginMessageEvent) {
-	logger.L.Info("event", "type", "PluginMessageEvent", "identifier", e.Identifier())
+	message := string(e.Data())
+	logger.L.Info("event", "type", "PluginMessageEvent", "identifier", e.Identifier().ID(), "message", message)
 }
