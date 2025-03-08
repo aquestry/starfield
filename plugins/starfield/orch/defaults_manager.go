@@ -2,6 +2,7 @@ package orch
 
 import (
 	"crypto/rand"
+	"github.com/aquestry/starfield/plugins/starfield/logger"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 	"math/big"
 	"sync"
@@ -81,7 +82,11 @@ func getServerBetweenMinAndMaxPlayers() proxy.RegisteredServer {
 
 func CreateLobby() {
 	name := "Lobby-" + generateRandomString(4)
-	CreateContainer(name, "lobby", defaultServerTemplate)
+	_, err := CreateContainer(name, "lobby", defaultServerTemplate)
+	if err != nil {
+		logger.L.Info("create", "error", err.Error())
+		return
+	}
 }
 
 func generateRandomString(n int) string {

@@ -9,6 +9,7 @@ import (
 	"github.com/robinbraemer/event"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 	"go.minekube.com/gate/pkg/edition/java/proxy/message"
+	"time"
 )
 
 var Plugin = proxy.Plugin{
@@ -23,7 +24,14 @@ var Plugin = proxy.Plugin{
 		event.Subscribe(p.Event(), 0, events.PluginMessage)
 		event.Subscribe(p.Event(), 0, events.Ready)
 
-		return nil
+		go func() {
+			for {
+				start := time.Now()
+				orch.Check()
+				time.Sleep(time.Until(start.Add(1 * time.Second)))
+			}
+		}()
 
+		return nil
 	},
 }

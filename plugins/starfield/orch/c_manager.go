@@ -6,8 +6,6 @@ import (
 	"github.com/aquestry/starfield/plugins/starfield/orch/node"
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 	"net"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -22,30 +20,17 @@ type Container struct {
 
 var clist []Container
 
-func RegisterContainer(name, tag, ip string, n node.Node, start time.Time) (Container, error) {
-	p, e := n.Run("docker", "port", name, "25565")
-	if e != nil {
-		return Container{}, e
-	}
-	parts := strings.SplitN(p, ":", 2)
-	if len(parts) < 2 {
-		return Container{}, e
-	}
-	port := parts[1]
-	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", n.Addr(), port))
+func RegisterContainer(name, tag, ip string, port int, n node.Node, start time.Time) (Container, error) {
+	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", n.Addr(), port))
 	info := proxy.NewServerInfo(name, addr)
-	portNumber, err := strconv.Atoi(port)
-	if err != nil {
-		return Container{}, e
-	}
 	server, err := ProxyInstance.Register(info)
 	if err != nil {
-		return Container{}, e
+		return Container{}, err
 	}
-	c := Container{name, tag, ip, n, server, portNumber}
+	c := Container{name, tag, ip, n, server, port}
 	clist = append(clist, c)
 	duration := time.Since(start)
-	logger.L.Info("create", "type", "container", "time", duration)
+	logger.L.Info("create", "name", name, "address", server.ServerInfo().Addr(), "time", duration)
 	return c, nil
 }
 
