@@ -2,7 +2,6 @@ package starfield
 
 import (
 	"context"
-	"github.com/aquestry/starfield/plugins/starfield/commands"
 	"github.com/aquestry/starfield/plugins/starfield/events"
 	"github.com/aquestry/starfield/plugins/starfield/logger"
 	"github.com/aquestry/starfield/plugins/starfield/orch"
@@ -23,8 +22,6 @@ var Plugin = proxy.Plugin{
 		event.Subscribe(p.Event(), 0, events.ShutdownEvent)
 		event.Subscribe(p.Event(), 0, events.PluginMessage)
 		event.Subscribe(p.Event(), 0, events.Ready)
-
-		p.Command().Register(commands.ContainerCommand())
 
 		return nil
 
