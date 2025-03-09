@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/aquestry/starfield/plugins/starfield/orch"
+	"github.com/aquestry/starfield/plugins/starfield/orch/container"
 	"go.minekube.com/brigodier"
 	"go.minekube.com/common/minecraft/component"
 	"go.minekube.com/gate/pkg/command"
@@ -11,15 +11,10 @@ import (
 
 func ContainerCommand() brigodier.LiteralNodeBuilder {
 	listContainers := command.Command(func(ctx *command.Context) error {
-		containerList := orch.GetContainers()
-		if len(containerList) == 0 {
-			return ctx.SendMessage(&component.Text{
-				Content: "No orch are currently registered.",
-			})
-		}
-		msg := "Available orch:\n"
-		for _, container := range containerList {
-			msg += fmt.Sprintf("- %s (%s:%d)\n", container.Name, container.IP, container.Port)
+		containerList := container.GetContainers()
+		msg := "Containers:\n"
+		for _, c := range containerList {
+			msg += fmt.Sprintf("- %s (%s:%d)\n", c.Name, c.IP, c.Port)
 		}
 		return ctx.SendMessage(&component.Text{Content: msg})
 	})
@@ -32,15 +27,25 @@ func ContainerCommand() brigodier.LiteralNodeBuilder {
 			})
 		}
 		containerName := ctx.String("name")
-		container, err := orch.GetContainer(containerName)
+		c, err := container.GetContainer(containerName)
 		if err != nil {
 			return ctx.SendMessage(&component.Text{
 				Content: fmt.Sprintf("Container '%s' not found.", containerName),
 			})
 		}
-		player.CreateConnectionRequest(container.Info).Connect(ctx)
+		here := false
+		c.Info.Players().Range(func(p proxy.Player) bool {
+			here = true
+			return true
+		})
+		if here {
+			return ctx.SendMessage(&component.Text{
+				Content: fmt.Sprintf("You are already on '%s'.", containerName),
+			})
+		}
+		player.CreateConnectionRequest(c.Info).Connect(ctx)
 		return ctx.SendMessage(&component.Text{
-			Content: fmt.Sprintf("Connecting to container '%s'...", containerName),
+			Content: fmt.Sprintf("Connecting to c '%s'...", containerName),
 		})
 	})
 
@@ -55,14 +60,15 @@ func ContainerCommand() brigodier.LiteralNodeBuilder {
 
 func containers() brigodier.SuggestionProvider {
 	return command.SuggestFunc(func(ctx *command.Context, builder *brigodier.SuggestionsBuilder) *brigodier.Suggestions {
-		player := ctx.Source.(proxy.Player)
-		for _, c := range orch.GetContainers() {
+		for _, c := range container.GetContainers() {
+			here := false
 			c.Info.Players().Range(func(p proxy.Player) bool {
-				if p != player {
-					builder.Suggest(c.Name)
-				}
+				here = true
 				return true
 			})
+			if !here {
+				builder.Suggest(c.Name)
+			}
 		}
 		return builder.Build()
 	})

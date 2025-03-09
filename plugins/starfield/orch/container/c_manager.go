@@ -1,4 +1,4 @@
-package orch
+package container
 
 import (
 	"fmt"
@@ -10,13 +10,14 @@ import (
 )
 
 type Container struct {
-	Name   string
-	Tag    string
-	IP     string
-	Node   node.Node
-	Info   proxy.RegisteredServer
-	Port   int
-	online bool
+	Name    string
+	Tag     string
+	IP      string
+	Node    node.Node
+	Info    proxy.RegisteredServer
+	Port    int
+	Online  bool
+	Pending []proxy.Player
 }
 
 var clist []*Container
@@ -28,10 +29,10 @@ func RegisterContainer(name, tag, ip string, port int, n node.Node, start time.T
 	if err != nil {
 		return nil, err
 	}
-	c := &Container{name, tag, ip, n, server, port, false}
+	c := &Container{name, tag, ip, n, server, port, false, make([]proxy.Player, 0)}
 	clist = append(clist, c)
 	duration := time.Since(start)
-	logger.L.Info("create", "name", name, "address", server.ServerInfo().Addr(), "time", duration)
+	logger.L.Info("create", "name", name, "address", addr.String(), "time", duration)
 	return c, nil
 }
 

@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/aquestry/starfield/plugins/starfield/orch"
 	"github.com/aquestry/starfield/plugins/starfield/orch/node"
 	"github.com/go-logr/logr"
 	"gopkg.in/yaml.v2"
@@ -63,7 +62,7 @@ func LoadConfig() {
 			count++
 			if !local {
 				local = true
-				orch.RegisterNode(node.NewLocalNode())
+				node.RegisterNode(node.NewLocalNode())
 			}
 		case "externKey":
 			if n.Name == "local" {
@@ -76,7 +75,7 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			orch.RegisterNode(rn)
+			node.RegisterNode(rn)
 		case "externPass":
 			if n.Name == "local" {
 				Logger.Info("config", "error", "Name of node can't be 'local'!")
@@ -88,7 +87,7 @@ func LoadConfig() {
 				continue
 			}
 			count++
-			orch.RegisterNode(rn)
+			node.RegisterNode(rn)
 		}
 	}
 	Logger.Info("config", "nodes", count)

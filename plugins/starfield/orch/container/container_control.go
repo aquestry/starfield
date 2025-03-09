@@ -1,4 +1,4 @@
-package orch
+package container
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ var ProxyInstance *proxy.Proxy
 func CreateContainer(name, tag, template string) (*Container, error) {
 	start := time.Now()
 	n := getNodeWithLowestInstances()
-	precmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s --restart unless-stopped -p 0:25565 %s", name, ProxyInstance.Config().Forwarding.VelocitySecret, template)
+	precmd := fmt.Sprintf("docker run --name %s -d -p 0:25565 anton691/simple-lobby", name)
 	_, err := n.Run(precmd)
 	if err != nil {
 		logger.L.Error(err, "pre create failed", "command", precmd)
@@ -63,7 +63,7 @@ func getNodeWithLowestInstances() (selectedNode node.Node) {
 	for _, srv := range GetContainers() {
 		counts[srv.Node.Addr()]++
 	}
-	for _, n := range GetNodes() {
+	for _, n := range node.GetNodes() {
 		c := counts[n.Addr()]
 		if c < minCount {
 			minCount = c

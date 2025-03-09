@@ -1,4 +1,4 @@
-package orch
+package container
 
 import (
 	"crypto/rand"
@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	defaultMin            = 1
-	defaultMax            = 2
+	defaultMin            = 5
+	defaultMax            = 10
 	defaultServerTemplate = "anton691/simple-lobby:latest"
 	mutex                 sync.Mutex
 	defaultLobby          proxy.RegisteredServer
