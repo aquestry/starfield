@@ -43,18 +43,13 @@ func rawDeleteContainer(n node.Node, name string) {
 	}
 }
 
-func DeleteContainer(name string) {
-	srv, err := GetContainer(name)
-	if err != nil {
-		logger.L.Error(err, "container not found")
-		return
-	}
-	cmd := fmt.Sprintf("docker rm %s --force", name)
-	_, e := srv.Node.Run(cmd)
+func DeleteContainer(c *Container) {
+	cmd := fmt.Sprintf("docker rm %s --force", c.Name)
+	_, e := c.Node.Run(cmd)
 	if e != nil {
 		logger.L.Error(e, "delete failed", "command", cmd)
 	}
-	Remove(name)
+	Remove(c.Name)
 }
 
 func getNodeWithLowestInstances() (selectedNode node.Node) {

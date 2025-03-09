@@ -27,8 +27,8 @@ func ContainerCommand() brigodier.LiteralNodeBuilder {
 			})
 		}
 		containerName := ctx.String("name")
-		c, err := container.GetContainer(containerName)
-		if err != nil {
+		c := container.GetContainer(containerName)
+		if c != nil {
 			return ctx.SendMessage(&component.Text{
 				Content: fmt.Sprintf("Container '%s' not found.", containerName),
 			})

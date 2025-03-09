@@ -8,7 +8,7 @@ import (
 
 func ShutdownEvent(_ *proxy.ShutdownEvent) {
 	for _, c := range container.GetContainers() {
-		container.DeleteContainer(c.Name)
+		container.DeleteContainer(c)
 	}
 	logger.L.Info("event", "type", "ShutdownEvent")
 }

@@ -40,6 +40,8 @@ func Remove(name string) {
 	for i, c := range clist {
 		if c.Name == name {
 			clist = append(clist[:i], clist[i+1:]...)
+			ProxyInstance.Unregister(c.Info.ServerInfo())
+			logger.L.Info("delete", "name", name)
 			return
 		}
 	}
@@ -49,11 +51,11 @@ func GetContainers() []*Container {
 	return clist
 }
 
-func GetContainer(name string) (*Container, error) {
+func GetContainer(name string) *Container {
 	for _, a := range clist {
 		if a.Name == name {
-			return a, nil
+			return a
 		}
 	}
-	return nil, fmt.Errorf("not found")
+	return nil
 }

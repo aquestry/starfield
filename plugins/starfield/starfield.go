@@ -31,6 +31,7 @@ var Plugin = proxy.Plugin{
 			for {
 				start := time.Now()
 				container.Check()
+				container.Update()
 				time.Sleep(time.Until(start.Add(1 * time.Second)))
 			}
 		}()

@@ -5,7 +5,7 @@ import (
 	"github.com/aquestry/starfield/plugins/starfield/util"
 )
 
-func Check() {
+func Update() {
 	for _, c := range GetContainers() {
 		motd, online := util.GetState(c.Info.ServerInfo().Addr().String())
 		if c.Online != online {

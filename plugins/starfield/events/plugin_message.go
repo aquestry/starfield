@@ -28,7 +28,7 @@ func PluginMessage(e *proxy.PluginMessageEvent) {
 }
 
 func Lobby(player proxy.Player) bool {
-	c, _ := container.GetContainer(player.CurrentServer().Server().ServerInfo().Name())
+	c := container.GetContainer(player.CurrentServer().Server().ServerInfo().Name())
 	if c.Tag != "lobby" {
 		player.CreateConnectionRequest(container.GetTargetLobby()).Connect(player.Context())
 		return true
