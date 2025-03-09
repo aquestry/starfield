@@ -12,7 +12,8 @@ func Update() {
 			c.Online = online
 			logger.L.Info("checker", "name", c.Name, "motd", motd, "online", online)
 			if online {
-				for _, player := range c.Pending {
+				for i, player := range c.Pending {
+					c.Pending = append(c.Pending[:i], c.Pending[i+1:]...)
 					player.CreateConnectionRequest(c.Info).Connect(player.Context())
 				}
 			}
