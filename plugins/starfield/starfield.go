@@ -2,6 +2,7 @@ package starfield
 
 import (
 	"context"
+	"github.com/aquestry/starfield/plugins/starfield/commands"
 	"github.com/aquestry/starfield/plugins/starfield/events"
 	"github.com/aquestry/starfield/plugins/starfield/logger"
 	"github.com/aquestry/starfield/plugins/starfield/orch"
@@ -31,6 +32,8 @@ var Plugin = proxy.Plugin{
 				time.Sleep(time.Until(start.Add(1 * time.Second)))
 			}
 		}()
+
+		p.Command().Register(commands.ContainerCommand())
 
 		return nil
 	},

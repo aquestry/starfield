@@ -11,14 +11,14 @@ import (
 
 var ProxyInstance *proxy.Proxy
 
-func CreateContainer(name, tag, template string) (Container, error) {
+func CreateContainer(name, tag, template string) (*Container, error) {
 	start := time.Now()
 	n := getNodeWithLowestInstances()
 	precmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s --restart unless-stopped -p 0:25565 %s", name, ProxyInstance.Config().Forwarding.VelocitySecret, template)
 	_, err := n.Run(precmd)
 	if err != nil {
 		logger.L.Error(err, "pre create failed", "command", precmd)
-		return Container{}, err
+		return &Container{}, err
 	}
 	port, err := util.GetPort(n, name)
 	if err != nil {
@@ -29,7 +29,7 @@ func CreateContainer(name, tag, template string) (Container, error) {
 	_, err = n.Run(cmd)
 	if err != nil {
 		logger.L.Error(err, "pre create failed", "command", cmd)
-		return Container{}, err
+		return &Container{}, err
 	}
 	return RegisterContainer(name, tag, n.Addr(), port, n, start)
 }

@@ -8,6 +8,9 @@ import (
 func Check() {
 	for _, c := range GetContainers() {
 		motd, online := util.GetState(c.Info.ServerInfo().Addr().String())
-		logger.L.Info("checker", "container", c.Name, "motd", motd, "online", online)
+		if c.online != online {
+			c.online = online
+			logger.L.Info("checker", "name", c.Name, "motd", motd, "online", online)
+		}
 	}
 }

@@ -10,24 +10,25 @@ import (
 )
 
 type Container struct {
-	Name string
-	Tag  string
-	IP   string
-	Node node.Node
-	Info proxy.RegisteredServer
-	Port int
+	Name   string
+	Tag    string
+	IP     string
+	Node   node.Node
+	Info   proxy.RegisteredServer
+	Port   int
+	online bool
 }
 
-var clist []Container
+var clist []*Container
 
-func RegisterContainer(name, tag, ip string, port int, n node.Node, start time.Time) (Container, error) {
+func RegisterContainer(name, tag, ip string, port int, n node.Node, start time.Time) (*Container, error) {
 	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", n.Addr(), port))
 	info := proxy.NewServerInfo(name, addr)
 	server, err := ProxyInstance.Register(info)
 	if err != nil {
-		return Container{}, err
+		return nil, err
 	}
-	c := Container{name, tag, ip, n, server, port}
+	c := &Container{name, tag, ip, n, server, port, false}
 	clist = append(clist, c)
 	duration := time.Since(start)
 	logger.L.Info("create", "name", name, "address", server.ServerInfo().Addr(), "time", duration)
@@ -43,15 +44,15 @@ func Remove(name string) {
 	}
 }
 
-func GetContainers() []Container {
+func GetContainers() []*Container {
 	return clist
 }
 
-func GetContainer(name string) (Container, error) {
+func GetContainer(name string) (*Container, error) {
 	for _, a := range clist {
 		if a.Name == name {
 			return a, nil
 		}
 	}
-	return Container{}, fmt.Errorf("not found")
+	return nil, fmt.Errorf("not found")
 }
