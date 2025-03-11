@@ -52,9 +52,9 @@ func GetContainers() []*Container {
 }
 
 func GetContainer(name string) *Container {
-	for _, a := range clist {
-		if a.Name == name {
-			return a
+	for _, c := range clist {
+		if c.Name == name {
+			return c
 		}
 	}
 	return nil

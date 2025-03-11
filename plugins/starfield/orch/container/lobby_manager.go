@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	defaultMin            = 5
-	defaultMax            = 10
+	defaultMin            = 1
+	defaultMax            = 2
 	defaultServerTemplate = "anton691/simple-lobby:latest"
 	mutex                 sync.Mutex
 	defaultLobby          proxy.RegisteredServer
@@ -19,7 +19,6 @@ var (
 func GetTargetLobby() proxy.RegisteredServer {
 	mutex.Lock()
 	defer mutex.Unlock()
-
 	target := getServerWithLowestPlayerCount()
 	if target != nil {
 		count := target.Players().Len()
@@ -36,9 +35,9 @@ func GetTargetLobby() proxy.RegisteredServer {
 
 func getAvailableServers() []proxy.RegisteredServer {
 	var servers []proxy.RegisteredServer
-	for _, srv := range GetContainers() {
-		if srv.Tag == "lobby" && srv.Info.Players().Len() < defaultMax {
-			servers = append(servers, srv.Info)
+	for _, c := range GetContainers() {
+		if c.Tag == "lobby" && c.Info.Players().Len() < defaultMax {
+			servers = append(servers, c.Info)
 		}
 	}
 	return servers
@@ -51,10 +50,10 @@ func getServerWithLowestPlayerCount() proxy.RegisteredServer {
 	}
 	lowest := servers[0]
 	lowestCount := lowest.Players().Len()
-	for _, srv := range servers {
-		count := srv.Players().Len()
+	for _, s := range servers {
+		count := s.Players().Len()
 		if count < lowestCount {
-			lowest = srv
+			lowest = s
 			lowestCount = count
 		}
 	}
@@ -62,8 +61,8 @@ func getServerWithLowestPlayerCount() proxy.RegisteredServer {
 }
 
 func isOtherServerUnderMin(other proxy.RegisteredServer) bool {
-	for _, srv := range getAvailableServers() {
-		if srv.Players().Len() < defaultMin && srv != other {
+	for _, s := range getAvailableServers() {
+		if s.Players().Len() < defaultMin && s != other {
 			return true
 		}
 	}
@@ -71,10 +70,10 @@ func isOtherServerUnderMin(other proxy.RegisteredServer) bool {
 }
 
 func getServerBetweenMinAndMaxPlayers() proxy.RegisteredServer {
-	for _, srv := range getAvailableServers() {
-		count := srv.Players().Len()
+	for _, s := range getAvailableServers() {
+		count := s.Players().Len()
 		if count >= defaultMin && count < defaultMax {
-			return srv
+			return s
 		}
 	}
 	return nil
@@ -85,7 +84,6 @@ func CreateLobby() {
 	_, err := CreateContainer(name, "lobby", defaultServerTemplate)
 	if err != nil {
 		logger.L.Info("create", "error", err.Error())
-		return
 	}
 }
 

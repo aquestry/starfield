@@ -24,7 +24,11 @@ func CreateContainer(name, tag, template string) (*Container, error) {
 	if err != nil {
 		logger.L.Error(err, "get port failed")
 	}
-	rawDeleteContainer(n, name)
+	c := fmt.Sprintf("docker rm %s --force", name)
+	_, e := n.Run(c)
+	if e != nil {
+		logger.L.Error(err, "delete failed", "command", c)
+	}
 	cmd := fmt.Sprintf("docker run --name %s -d -e PAPER_VELOCITY_SECRET=%s --restart unless-stopped -p %d:25565 %s", name, ProxyInstance.Config().Forwarding.VelocitySecret, port, template)
 	_, err = n.Run(cmd)
 	if err != nil {
@@ -32,15 +36,6 @@ func CreateContainer(name, tag, template string) (*Container, error) {
 		return &Container{}, err
 	}
 	return RegisterContainer(name, tag, n.Addr(), port, n, start)
-}
-
-func rawDeleteContainer(n node.Node, name string) {
-	cmd := fmt.Sprintf("docker rm %s --force", name)
-	_, err := n.Run(cmd)
-	if err != nil {
-		logger.L.Error(err, "delete failed", "command", cmd)
-		return
-	}
 }
 
 func DeleteContainer(c *Container) {
@@ -52,12 +47,13 @@ func DeleteContainer(c *Container) {
 	Remove(c.Name)
 }
 
-func getNodeWithLowestInstances() (selectedNode node.Node) {
+func getNodeWithLowestInstances() node.Node {
 	minCount := int(^uint(0) >> 1)
 	counts := make(map[string]int)
 	for _, srv := range GetContainers() {
 		counts[srv.Node.Addr()]++
 	}
+	var selectedNode node.Node
 	for _, n := range node.GetNodes() {
 		c := counts[n.Addr()]
 		if c < minCount {
@@ -65,5 +61,5 @@ func getNodeWithLowestInstances() (selectedNode node.Node) {
 			selectedNode = n
 		}
 	}
-	return
+	return selectedNode
 }
