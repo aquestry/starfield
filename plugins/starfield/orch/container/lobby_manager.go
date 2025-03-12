@@ -9,8 +9,8 @@ import (
 var lobby proxy.RegisteredServer
 
 func CreateLobby() {
-	name := "lobby" + util.RandomString()
-	container, err := CreateContainer(name, "lobby-", "anton691/simple-lobby")
+	name := "lobby-" + util.RandomString()
+	container, err := CreateContainer(name, "lobby", "anton691/simple-lobby")
 	if err != nil {
 		logger.L.Error(err, "error creating lobby")
 	} else {
