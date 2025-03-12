@@ -6,9 +6,9 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-func ChooseInitial(e *proxy.PlayerChooseInitialServerEvent) {
+func PlayerChooseInitialServer(e *proxy.PlayerChooseInitialServerEvent) {
 	player := e.Player()
-	s := container.GetTargetLobby()
+	s := container.GetLobby()
 	e.SetInitialServer(s)
 	logger.L.Info("event", "type", "PlayerChooseInitialServerEvent", "player", player.Username(), "result", s.ServerInfo().Name())
 }

@@ -20,17 +20,20 @@ var Plugin = proxy.Plugin{
 	Init: func(ctx context.Context, p *proxy.Proxy) error {
 		logger.L = logr.FromContextOrDiscard(ctx)
 		container.ProxyInstance = p
+
 		channel, _ := message.ChannelIdentifierFrom("nebula:main")
 		p.ChannelRegistrar().Register(channel)
-		event.Subscribe(p.Event(), 0, events.ChooseInitial)
-		event.Subscribe(p.Event(), 0, events.ShutdownEvent)
+
+		event.Subscribe(p.Event(), 0, events.PlayerChooseInitialServer)
+		event.Subscribe(p.Event(), 0, events.ServerConnected)
 		event.Subscribe(p.Event(), 0, events.PluginMessage)
+		event.Subscribe(p.Event(), 0, events.Shutdown)
 		event.Subscribe(p.Event(), 0, events.Ready)
 
+		// Update online state of the containers
 		go func() {
 			for {
 				start := time.Now()
-				container.Check()
 				container.Update()
 				time.Sleep(time.Until(start.Add(1 * time.Second)))
 			}

@@ -6,7 +6,7 @@ import (
 	"go.minekube.com/gate/pkg/edition/java/proxy"
 )
 
-func ShutdownEvent(_ *proxy.ShutdownEvent) {
+func Shutdown(_ *proxy.ShutdownEvent) {
 	for _, c := range container.GetContainers() {
 		container.DeleteContainer(c)
 	}

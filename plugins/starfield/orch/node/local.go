@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
@@ -45,24 +44,6 @@ func (ln *LocalNode) Port() string {
 
 func (ln *LocalNode) Name() string {
 	return "local"
-}
-
-func (ln *LocalNode) GetFreePort() int {
-	return ln.freePort
-}
-
-func (ln *LocalNode) UpdateFreePort() {
-	out, err := ln.Run("python3", "-c", "import socket; s=socket.socket(); s.bind(('0.0.0.0', 0)); print(s.getsockname()[1]); s.close()")
-	if err != nil {
-		ln.freePort = 0
-		return
-	}
-	p, e := strconv.Atoi(strings.TrimSpace(out))
-	if e != nil {
-		ln.freePort = 0
-		return
-	}
-	ln.freePort = p
 }
 
 func (ln *LocalNode) Close() error {

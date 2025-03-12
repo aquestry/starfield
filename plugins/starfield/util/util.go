@@ -7,11 +7,25 @@ import (
 	"fmt"
 	"github.com/aquestry/starfield/plugins/starfield/orch/node"
 	"io"
+	"math/rand"
 	"net"
 	"strconv"
 	"strings"
 	"time"
 )
+
+func RandomString() string {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	s := ""
+	for i := 0; i < 6; i++ {
+		c := 'a' + rune(r.Intn(26))
+		if r.Intn(2) == 0 {
+			c -= 32
+		}
+		s += string(c)
+	}
+	return s
+}
 
 func GetPort(n node.Node, name string) (int, error) {
 	p, e := n.Run("docker", "port", name, "25565")
