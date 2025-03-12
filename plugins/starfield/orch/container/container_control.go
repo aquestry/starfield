@@ -44,7 +44,7 @@ func DeleteContainer(c *Container) {
 	if e != nil {
 		logger.L.Error(e, "delete failed", "command", cmd)
 	}
-	Remove(c.Name)
+	UnregisterContainer(c.Name)
 }
 
 func getNodeWithLowestInstances() node.Node {

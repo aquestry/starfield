@@ -13,8 +13,12 @@ func ContainerCommand() brigodier.LiteralNodeBuilder {
 	listContainers := command.Command(func(ctx *command.Context) error {
 		containerList := container.GetContainers()
 		msg := "Containers:\n"
-		for _, c := range containerList {
-			msg += fmt.Sprintf("- %s (%s:%d)\n", c.Name, c.IP, c.Port)
+		for i, c := range containerList {
+			rep := ""
+			if i < len(containerList)-1 {
+				rep = "\n"
+			}
+			msg += fmt.Sprintf("- %s%s", c.Name, rep)
 		}
 		return ctx.SendMessage(&component.Text{Content: msg})
 	})

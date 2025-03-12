@@ -16,6 +16,7 @@ func LobbyCommand() brigodier.LiteralNodeBuilder {
 			})
 		}
 		msg := "Connecting you to a lobby..."
+		// finish
 		return ctx.SendMessage(&component.Text{Content: msg})
 	})
 	return brigodier.Literal("lobby").Executes(lobby)

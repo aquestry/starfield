@@ -10,5 +10,7 @@ import (
 func Ready(e *proxy.ReadyEvent) {
 	config.LoadConfig()
 	container.CreateLobby()
+	container.CreateLobby()
+	container.CreateLobby()
 	logger.L.Info("event", "type", "ReadyEvent", "address", e.Addr())
 }

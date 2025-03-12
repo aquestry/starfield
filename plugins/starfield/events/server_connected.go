@@ -7,7 +7,6 @@ import (
 )
 
 func ServerConnected(e *proxy.ServerConnectedEvent) {
-	logger.L.Info("event", "type", "ServerConnectedEvent")
 	c := container.GetContainer(e.Server().ServerInfo().Name())
 	if c != nil {
 		for i, player := range c.Pending {
@@ -16,4 +15,5 @@ func ServerConnected(e *proxy.ServerConnectedEvent) {
 			}
 		}
 	}
+	logger.L.Info("event", "type", "ServerConnectedEvent")
 }

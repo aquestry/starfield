@@ -32,11 +32,11 @@ func RegisterContainer(name, tag, ip string, port int, n node.Node, start time.T
 	c := &Container{name, tag, ip, n, server, port, false, make([]proxy.Player, 0)}
 	clist = append(clist, c)
 	duration := time.Since(start)
-	logger.L.Info("create", "name", name, "address", addr.String(), "time", duration)
+	logger.L.Info("create", "name", name, "addr", addr.String(), "time", duration)
 	return c, nil
 }
 
-func Remove(name string) {
+func UnregisterContainer(name string) {
 	for i, c := range clist {
 		if c.Name == name {
 			clist = append(clist[:i], clist[i+1:]...)
